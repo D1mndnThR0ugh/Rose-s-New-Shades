@@ -1,0 +1,1 @@
+#include "/core/gbuffers_textured_lit.vsh"
