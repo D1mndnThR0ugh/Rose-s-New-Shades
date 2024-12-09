@@ -1,4 +1,5 @@
 #version 330 compatibility
+#include "/shader.h"
 
 uniform sampler2D colortex0;
 uniform sampler2D depthtex0;
@@ -56,7 +57,7 @@ void subfog() {
 }
 
 void eyeballs() {
-	color.rgb = mix(color.rgb, pow(color.rgb, vec3(0.6, 0.4, 0.6)), nightVision);
+	color.rgb = mix(color.rgb, pow(color.rgb, vec3(0.5)), nightVision);
 	vec3 tmp = color.rgb;
 	bigfog(vec3(0.0), vec4(0.1, 0.0, 2.5, 0.1));
 	color.rgb = mix(tmp, color.rgb, blindness);
