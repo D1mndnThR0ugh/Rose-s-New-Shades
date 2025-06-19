@@ -4,6 +4,10 @@
 uniform sampler2D colortex0;
 uniform sampler2D depthtex0;
 uniform sampler2D colortex1;
+uniform sampler2D colortex2;
+uniform sampler2D colortex3;
+uniform sampler2D colortex4;
+uniform sampler2D colortex5;
 uniform mat4 gbufferProjectionInverse;
 uniform float far;
 uniform int isEyeInWater;
@@ -32,12 +36,14 @@ float getdist() {
 void bigfog(vec3 fogcolor, vec4 fogopts) {
 	float dist = getdist();
 	if(dist == -1.0) {
-		color.rgb = fogcolor;
+		color.rgb = pow(fogcolor, vec3(1.0 / GAMMA_CORRECTION));
 		return;
 	}
 	float fogdist = fogopts.z * pow(dist / (far / fogopts.w), fogopts.x) - fogopts.y;
-	fogdist *= 1.0 - (texture(colortex1, texcoord).r / 5.0);
+	fogdist *= 1.0 - (texture(colortex2, texcoord).r / 5.0);
+	color.rgb = pow(color.rgb, vec3(GAMMA_CORRECTION));
 	color.rgb = mix(color.rgb, fogcolor, clamp(fogdist, 0.0, 1.0));
+	color.rgb = pow(color.rgb, vec3(1.0 / GAMMA_CORRECTION));
 }
 
 void subfog() {
@@ -45,7 +51,7 @@ void subfog() {
 		if(isEyeInWater == 1) {
 			vec3 tmp = color.rgb;
 			bigfog(watercolor, vec4(0.4, 0.4, 1.7, 2.4));
-			color.rgb = mix(color.rgb, tmp, nightVision);
+			color.rgb = mix(color.rgb, tmp, nightVision * 0.5);
 		}
 	}	else {
 		if(isEyeInWater == 2) {
@@ -57,8 +63,9 @@ void subfog() {
 }
 
 void eyeballs() {
-	color.rgb = mix(color.rgb, pow(color.rgb, vec3(0.5)), nightVision);
+	color.rgb = pow(color.rgb, vec3(GAMMA_CORRECTION));
 	vec3 tmp = color.rgb;
-	bigfog(vec3(0.0), vec4(0.1, 0.0, 2.5, 0.1));
+	bigfog(vec3(0.0), vec4(0.11, 0.0, 2.5, 0.05));
 	color.rgb = mix(tmp, color.rgb, blindness);
+	color.rgb = pow(color.rgb, vec3(1.0 / GAMMA_CORRECTION));
 }
