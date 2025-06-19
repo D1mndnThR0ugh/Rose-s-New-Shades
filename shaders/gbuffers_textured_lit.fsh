@@ -1,4 +1,4 @@
-#include "/core/gbuffers_textured_lit.fsh"
+#include "/core/gbuffers_terrain.fsh"
 #include "/shader.h"
 
 vec3 suncolor = vec3(OW_SL_R, OW_SL_G, OW_SL_B);

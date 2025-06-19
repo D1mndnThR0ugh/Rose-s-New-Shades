@@ -1,4 +1,5 @@
 #version 330 compatibility
+#include "/shader.h"
 
 uniform sampler2D gtexture;
 uniform float cloudHeight;
@@ -10,8 +11,9 @@ uniform int moonPhase;
 in vec2 texcoord;
 in vec3 vertcoord;
 
-/* RENDERTARGETS: 0 */
+/* RENDERTARGETS: 0,5 */
 layout(location = 0) out vec4 color;
+layout(location = 1) out vec4 cloud;
 
 void clouds() {
 	color = texture(gtexture, texcoord);
@@ -21,7 +23,9 @@ void clouds() {
 	color.rgb *= ((time / 2.0) + 0.5) * weather;
 	color.rgb = mix(color.rgb * moon, color.rgb, time);
 	color.a = 1.1 - pow((vertcoord.y - cloudHeight) / 4.0, 0.5);
+	color.rgb = pow(color.rgb, vec3(1.0 / GAMMA_CORRECTION));
 	if (color.a <= 0.0) {
 		discard;
 	}
+	cloud = color;
 }

@@ -1,1 +1,1 @@
-#include "/core/gbuffers_textured_lit.vsh"
+#include "/core/gbuffers_terrain.vsh"
