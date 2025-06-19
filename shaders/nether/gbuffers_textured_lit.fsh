@@ -1,4 +1,4 @@
-#include "/core/gbuffers_textured_lit.fsh"
+#include "/core/gbuffers_terrain.fsh"
 #include "/shader.h"
 
 const vec3 blockcolor = vec3(NT_BL_R, NT_BL_G, NT_BL_B);
