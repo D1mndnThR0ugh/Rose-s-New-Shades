@@ -7,5 +7,5 @@ vec3 blockcolor = vec3(OW_BL_R, OW_BL_G, OW_BL_B);
 vec3 worldcolor = vec3(OW_WL_R, OW_WL_G, OW_WL_B);
 
 void main() {
-  dothelighting(suncolor, mooncolor, blockcolor, worldcolor, OW_SH);
+  dothelighting(suncolor, mooncolor, blockcolor, worldcolor);
 }

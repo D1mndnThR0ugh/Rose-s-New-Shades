@@ -1,12 +1,8 @@
 #include "/core/composite.fsh"
-#include "/shader.h"
-
-const vec4 fog = vec4(0.3, 0.5, 1.7, 2.4);
-const vec3 fogcolor = vec3(0.25, 0.1, 0.05);
 
 void main() {
   color = texture(colortex0, texcoord);
-  bigfog(fogcolor, fog);
+  bigfog(vec3(FG_NT_R, FG_NT_G, FG_NT_B), vec4((FG_NT_RAD_B) + (FG_NT_RAD_C * 16.0) + (FG_NT_RAD_P * far), (FG_NT_DEP_B) + (FG_NT_DEP_C * 16.0) + (FG_NT_DEP_P * far), FG_NT_EXP * FG_NT_EXO, FG_NT_SKY));
   subfog();
   eyeballs();
 }

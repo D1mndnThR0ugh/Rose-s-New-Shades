@@ -13,12 +13,9 @@ uniform float far;
 uniform int isEyeInWater;
 uniform float blindness;
 uniform float nightVision;
+uniform vec3 fogColor;
 
 in vec2 texcoord;
-
-const vec3 watercolor = vec3(0.2, 0.4, 0.7);
-const vec3 lavacolor = vec3(1.0, 0.1, 0.0);
-const vec3 snowcolor = vec3(1.0);
 
 /* RENDERTARGETS: 0 */
 layout(location = 0) out vec4 color;
@@ -35,12 +32,15 @@ float getdist() {
 
 void bigfog(vec3 fogcolor, vec4 fogopts) {
 	float dist = getdist();
+  if(min(fogcolor.r, min(fogcolor.g, fogcolor.b)) == -1) {
+    fogcolor = fogColor;
+  }
 	if(dist == -1.0) {
-		color.rgb = pow(fogcolor, vec3(1.0 / GAMMA_CORRECTION));
+		color.rgb = mix(pow(fogcolor, vec3(1.0 / GAMMA_CORRECTION)), color.rgb, fogopts.w);
 		return;
 	}
-	float fogdist = fogopts.z * pow(dist / (far / fogopts.w), fogopts.x) - fogopts.y;
-	fogdist *= 1.0 - (texture(colortex2, texcoord).r / 5.0);
+	float fogdist = pow(max(dist - fogopts.x, 0) / fogopts.y, fogopts.z);
+	fogdist *= 1.0 + (FG_OW_LIG * texture(colortex2, texcoord).r);
 	color.rgb = pow(color.rgb, vec3(GAMMA_CORRECTION));
 	color.rgb = mix(color.rgb, fogcolor, clamp(fogdist, 0.0, 1.0));
 	color.rgb = pow(color.rgb, vec3(1.0 / GAMMA_CORRECTION));
@@ -50,14 +50,13 @@ void subfog() {
 	if(isEyeInWater < 2) {
 		if(isEyeInWater == 1) {
 			vec3 tmp = color.rgb;
-			bigfog(watercolor, vec4(0.4, 0.4, 1.7, 2.4));
-			color.rgb = mix(color.rgb, tmp, nightVision * 0.5);
+			bigfog(vec3(FG_WT_R, FG_WT_G, FG_WT_B), vec4((FG_WT_RAD_B) + (FG_WT_RAD_C * 16.0) + (FG_WT_RAD_P * far), (FG_WT_DEP_B) + (FG_WT_DEP_C * 16.0) + (FG_WT_DEP_P * far), FG_WT_EXP * FG_WT_EXO, FG_WT_SKY));
 		}
 	}	else {
 		if(isEyeInWater == 2) {
-			bigfog(lavacolor, vec4(0.1, 0.0, 2.5, 0.1));
+			bigfog(vec3(FG_LV_R, FG_LV_G, FG_LV_B), vec4((FG_LV_RAD_B) + (FG_LV_RAD_C * 16.0) + (FG_LV_RAD_P * far), (FG_LV_DEP_B) + (FG_LV_DEP_C * 16.0) + (FG_LV_DEP_P * far), FG_LV_EXP * FG_LV_EXO, FG_LV_SKY));
 		} else {
-			bigfog(snowcolor, vec4(0.1, 0.0, 2.5, 0.1));
+			bigfog(vec3(FG_SN_R, FG_SN_G, FG_SN_B), vec4((FG_SN_RAD_B) + (FG_SN_RAD_C * 16.0) + (FG_SN_RAD_P * far), (FG_SN_DEP_B) + (FG_SN_DEP_C * 16.0) + (FG_SN_DEP_P * far), FG_SN_EXP * FG_SN_EXO, FG_SN_SKY));
 		}
 	}
 }
@@ -65,7 +64,7 @@ void subfog() {
 void eyeballs() {
 	color.rgb = pow(color.rgb, vec3(GAMMA_CORRECTION));
 	vec3 tmp = color.rgb;
-	bigfog(vec3(0.0), vec4(0.11, 0.0, 2.5, 0.05));
+	bigfog(vec3(0.0), vec4(0, 5, 2.0, 0));
 	color.rgb = mix(tmp, color.rgb, blindness);
 	color.rgb = pow(color.rgb, vec3(1.0 / GAMMA_CORRECTION));
 }
